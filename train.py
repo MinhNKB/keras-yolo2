@@ -29,22 +29,21 @@ def _main_(args):
     ###############################
 
     # parse annotations of the training set
-    train_imgs, train_labels = parse_annotation(config['train']['train_annot_folder'], 
-                                                config['train']['train_image_folder'], 
-                                                config['model']['labels'])
-
+    if not os.path.exists(config['valid']['valid_annot_folder']):
+        train_imgs, train_labels, valid_imgs = parse_annotation(config['train']['train_annot_folder'],
+                                                    config['train']['train_image_folder'],
+                                                    config['model']['labels'], split_val=True)
+        print("Train:", len(train_imgs),"- Validate:", len(valid_imgs))
 
     # parse annotations of the validation set, if any, otherwise split the training set
-    if os.path.exists(config['valid']['valid_annot_folder']):
+    else:
+        train_imgs, train_labels = parse_annotation(config['train']['train_annot_folder'],
+                                                                config['train']['train_image_folder'],
+                                                                config['model']['labels'])
+
         valid_imgs, valid_labels = parse_annotation(config['valid']['valid_annot_folder'], 
                                                     config['valid']['valid_image_folder'], 
                                                     config['model']['labels'])
-    else:
-        train_valid_split = int(0.8*len(train_imgs))
-        np.random.shuffle(train_imgs)
-
-        valid_imgs = train_imgs[train_valid_split:]
-        train_imgs = train_imgs[:train_valid_split]
 
     if len(config['model']['labels']) > 0:
         overlap_labels = set(config['model']['labels']).intersection(set(train_labels.keys()))
@@ -59,6 +58,7 @@ def _main_(args):
     else:
         print('No labels are provided. Train on all seen labels.')
         config['model']['labels'] = train_labels.keys()
+        print(config['model']['labels'])
         
     ###############################
     #   Construct the model 
@@ -95,7 +95,9 @@ def _main_(args):
                coord_scale        = config['train']['coord_scale'],
                class_scale        = config['train']['class_scale'],
                saved_weights_name = config['train']['saved_weights_name'],
-               debug              = config['train']['debug'])
+               debug              = config['train']['debug'],
+               tensor_log         = config['train']['tensorboard_log'],
+               csv_log            = config['train']['csv_log'])
 
 if __name__ == '__main__':
     args = argparser.parse_args()

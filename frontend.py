@@ -10,7 +10,7 @@ from keras.applications.mobilenet import MobileNet
 from keras.layers.merge import concatenate
 from keras.optimizers import SGD, Adam, RMSprop
 from preprocessing import BatchGenerator
-from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
+from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard, CSVLogger
 from backend import TinyYoloFeature, FullYoloFeature, MobileNetFeature, SqueezeNetFeature, Inception3Feature, VGG16Feature, ResNet50Feature
 
 class YOLO(object):
@@ -255,7 +255,9 @@ class YOLO(object):
                     coord_scale,
                     class_scale,
                     saved_weights_name='best_weights.h5',
-                    debug=False):     
+                    debug=False,
+                    tensor_log="./logs/",
+                    csv_log="logs.csv"):
 
         self.batch_size = batch_size
 
@@ -315,11 +317,13 @@ class YOLO(object):
                                      save_best_only=True, 
                                      mode='min', 
                                      period=1)
-        tensorboard = TensorBoard(log_dir=os.path.expanduser('~/logs/'), 
+        tensorboard = TensorBoard(log_dir=tensor_log,
                                   histogram_freq=0, 
                                   #write_batch_performance=True,
                                   write_graph=True, 
                                   write_images=False)
+
+        csvlogger = CSVLogger(csv_log, separator=',', append=False)
 
         ############################################
         # Start the training process
@@ -331,7 +335,7 @@ class YOLO(object):
                                  verbose          = 2 if debug else 1,
                                  validation_data  = valid_generator,
                                  validation_steps = len(valid_generator) * valid_times,
-                                 callbacks        = [early_stop, checkpoint, tensorboard], 
+                                 callbacks        = [early_stop, checkpoint, tensorboard, csvlogger],
                                  workers          = 3,
                                  max_queue_size   = 8)      
 

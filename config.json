@@ -4,12 +4,12 @@
         "input_size":           416,
         "anchors":              [0.57273, 0.677385, 1.87446, 2.06253, 3.33843, 5.47434, 7.88282, 3.52778, 9.77052, 9.16828],
         "max_box_per_image":    10,        
-        "labels":               ["raccoon"]
+        "labels":               []
     },
 
     "train": {
-        "train_image_folder":   "D:\\Projects\\raccoon_dataset\\images\\",
-        "train_annot_folder":   "D:\\Projects\\raccoon_dataset\\annotations\\",
+        "train_image_folder":   "D:\\Projects\\crawl-data\\Softdrink\\images\\",
+        "train_annot_folder":   "D:\\Projects\\crawl-data\\Softdrink\\annotations\\",
           
         "train_times":          10,
         "pretrained_weights":   "",
@@ -18,13 +18,15 @@
         "nb_epochs":            50,
         "warmup_epochs":        3,
 
-        "object_scale":         5.0 ,
-        "no_object_scale":      1.0,
+        "object_scale":         4.0 ,
+        "no_object_scale":      2.0,
         "coord_scale":          1.0,
         "class_scale":          1.0,
 
         "saved_weights_name":   "full_yolo_racoon.h5",
-        "debug":                false
+        "debug":                false,
+        "tensorboard_log":      "./logs/",
+        "csv_log":              "logs.csv"
     },
 
     "valid": {

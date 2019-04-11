@@ -7,55 +7,72 @@ from imgaug import augmenters as iaa
 from keras.utils import Sequence
 import xml.etree.ElementTree as ET
 from utils import BoundBox, bbox_iou
+import glob
 
-def parse_annotation(ann_dir, img_dir, labels=[]):
+def parse_annotation(ann_dir, img_dir, labels=[], split_val = False):
     all_imgs = []
     seen_labels = {}
-    
-    for ann in sorted(os.listdir(ann_dir)):
-        img = {'object':[]}
 
-        tree = ET.parse(ann_dir + ann)
+    if split_val:
+        val_imgs = []
 
-        
-        for elem in tree.iter():
-            if 'filename' in elem.tag:
-                img['filename'] = img_dir + elem.text
-            if 'width' in elem.tag:
-                img['width'] = int(elem.text)
-            if 'height' in elem.tag:
-                img['height'] = int(elem.text)
-            if 'object' in elem.tag or 'part' in elem.tag:
-                obj = {}
-                
-                for attr in list(elem):
-                    if 'name' in attr.tag:
-                        obj['name'] = attr.text
+    category_dirs = glob.glob(ann_dir + "*\\")
+    for category_dir in category_dirs:
+        category_imgs = []
+        category = category_dir.split("\\")[-2]
+        for ann in sorted(os.listdir(category_dir)):
+            img = {'object':[]}
 
-                        if obj['name'] in seen_labels:
-                            seen_labels[obj['name']] += 1
-                        else:
-                            seen_labels[obj['name']] = 1
-                        
-                        if len(labels) > 0 and obj['name'] not in labels:
-                            break
-                        else:
-                            img['object'] += [obj]
-                            
-                    if 'bndbox' in attr.tag:
-                        for dim in list(attr):
-                            if 'xmin' in dim.tag:
-                                obj['xmin'] = int(round(float(dim.text)))
-                            if 'ymin' in dim.tag:
-                                obj['ymin'] = int(round(float(dim.text)))
-                            if 'xmax' in dim.tag:
-                                obj['xmax'] = int(round(float(dim.text)))
-                            if 'ymax' in dim.tag:
-                                obj['ymax'] = int(round(float(dim.text)))
+            tree = ET.parse(category_dir + ann)
 
-        if len(img['object']) > 0:
-            all_imgs += [img]
-                        
+            for elem in tree.iter():
+                if 'filename' in elem.tag:
+                    img['filename'] = img_dir + category + "\\" + elem.text
+                if 'width' in elem.tag:
+                    img['width'] = int(elem.text)
+                if 'height' in elem.tag:
+                    img['height'] = int(elem.text)
+                if 'object' in elem.tag or 'part' in elem.tag:
+                    obj = {}
+
+                    for attr in list(elem):
+                        if 'name' in attr.tag:
+                            obj['name'] = attr.text
+
+                            if obj['name'] in seen_labels:
+                                seen_labels[obj['name']] += 1
+                            else:
+                                seen_labels[obj['name']] = 1
+
+                            if len(labels) > 0 and obj['name'] not in labels:
+                                break
+                            else:
+                                img['object'] += [obj]
+
+                        if 'bndbox' in attr.tag:
+                            for dim in list(attr):
+                                if 'xmin' in dim.tag:
+                                    obj['xmin'] = int(round(float(dim.text)))
+                                if 'ymin' in dim.tag:
+                                    obj['ymin'] = int(round(float(dim.text)))
+                                if 'xmax' in dim.tag:
+                                    obj['xmax'] = int(round(float(dim.text)))
+                                if 'ymax' in dim.tag:
+                                    obj['ymax'] = int(round(float(dim.text)))
+
+            if len(img['object']) > 0:
+                category_imgs += [img]
+
+        if split_val:
+            train_valid_split = int(0.8 * len(category_imgs))
+            np.random.shuffle(category_imgs)
+
+            val_imgs += category_imgs[train_valid_split:]
+            all_imgs += category_imgs[:train_valid_split]
+
+    if split_val:
+        return all_imgs, seen_labels, val_imgs
+
     return all_imgs, seen_labels
 
 class BatchGenerator(Sequence):

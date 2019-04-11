@@ -8,8 +8,8 @@
     },
 
     "train": {
-        "train_image_folder":   "/content/drive/My Drive/Personal/YoloV2/Data/Raccoon/images/",
-        "train_annot_folder":   "/content/drive/My Drive/Personal/YoloV2/Data/Raccoon/annotations/",
+        "train_image_folder":   "/content/drive/My Drive/Personal/YoloV2/Data/Softdrink/images/",
+        "train_annot_folder":   "/content/drive/My Drive/Personal/YoloV2/Data/Softdrink/annotations/",
           
         "train_times":          10,
         "pretrained_weights":   "",
@@ -24,7 +24,9 @@
         "class_scale":          1.0,
 
         "saved_weights_name":   "full_yolo_racoon.h5",
-        "debug":                false
+        "debug":                false,
+        "tensorboard_log":      "./logs/",
+        "csv_log":              "logs.csv"
     },
 
     "valid": {
