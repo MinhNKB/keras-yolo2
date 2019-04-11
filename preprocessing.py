@@ -16,10 +16,10 @@ def parse_annotation(ann_dir, img_dir, labels=[], split_val = False):
     if split_val:
         val_imgs = []
 
-    category_dirs = glob.glob(ann_dir + "*\\")
+    category_dirs = glob.glob(ann_dir + "*/")
     for category_dir in category_dirs:
         category_imgs = []
-        category = category_dir.split("\\")[-2]
+        category = category_dir.split("/")[-2]
         for ann in sorted(os.listdir(category_dir)):
             img = {'object':[]}
 
@@ -27,7 +27,7 @@ def parse_annotation(ann_dir, img_dir, labels=[], split_val = False):
 
             for elem in tree.iter():
                 if 'filename' in elem.tag:
-                    img['filename'] = img_dir + category + "\\" + elem.text
+                    img['filename'] = img_dir + category + "/" + elem.text
                 if 'width' in elem.tag:
                     img['width'] = int(elem.text)
                 if 'height' in elem.tag:
