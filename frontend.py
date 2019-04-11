@@ -55,7 +55,7 @@ class YOLO(object):
         else:
             raise Exception('Architecture not supported! Only support Full Yolo, Tiny Yolo, MobileNet, SqueezeNet, VGG16, ResNet50, and Inception3 at the moment!')
 
-        print(self.feature_extractor.get_output_shape())    
+        print(self.feature_extractor.get_output_shape())
         self.grid_h, self.grid_w = self.feature_extractor.get_output_shape()        
         features = self.feature_extractor.extract(input_image)            
 
@@ -281,7 +281,7 @@ class YOLO(object):
             'ANCHORS'         : self.anchors,
             'BATCH_SIZE'      : self.batch_size,
             'TRUE_BOX_BUFFER' : self.max_box_per_image,
-        }    
+        }
 
         train_generator = BatchGenerator(train_imgs, 
                                      generator_config, 
@@ -289,7 +289,7 @@ class YOLO(object):
         valid_generator = BatchGenerator(valid_imgs, 
                                      generator_config, 
                                      norm=self.feature_extractor.normalize,
-                                     jitter=False)   
+                                     jitter=False)
                                      
         self.warmup_batches  = warmup_epochs * (train_times*len(train_generator) + valid_times*len(valid_generator))   
 

@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-#MinhNKB
 
 import argparse
 import os
@@ -33,6 +32,7 @@ def _main_(args):
     train_imgs, train_labels = parse_annotation(config['train']['train_annot_folder'], 
                                                 config['train']['train_image_folder'], 
                                                 config['model']['labels'])
+
 
     # parse annotations of the validation set, if any, otherwise split the training set
     if os.path.exists(config['valid']['valid_annot_folder']):

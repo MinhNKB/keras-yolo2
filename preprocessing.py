@@ -16,6 +16,7 @@ def parse_annotation(ann_dir, img_dir, labels=[]):
         img = {'object':[]}
 
         tree = ET.parse(ann_dir + ann)
+
         
         for elem in tree.iter():
             if 'filename' in elem.tag:
